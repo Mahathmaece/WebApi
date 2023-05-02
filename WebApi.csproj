@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>990768e2-f420-4c64-b8bf-6b126f38a948</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\20210203040459_AVEReportsAndReportingModule.cs" />
+    <Compile Remove="Migrations\20210203040459_AVEReportsAndReportingModule.Designer.cs" />
+    <Compile Remove="Migrations\20210211073913_InternalTransferModule.cs" />
+    <Compile Remove="Migrations\20210211073913_InternalTransferModule.Designer.cs" />
+    <Compile Remove="Migrations\20210223094507_AVETask_AssetCapitalizationDateTo.cs" />
+    <Compile Remove="Migrations\20210223094507_AVETask_AssetCapitalizationDateTo.Designer.cs" />
+    <Compile Remove="Migrations\20210302081651_Asset-EvaluationGroup2.cs" />
+    <Compile Remove="Migrations\20210302081651_Asset-EvaluationGroup2.Designer.cs" />
+    <Compile Remove="Migrations\20210316034344_ReCreateVendorTable.cs" />
+    <Compile Remove="Migrations\20210316034344_ReCreateVendorTable.Designer.cs" />
+    <Compile Remove="Migrations\20210316040117_ReCreateVendorTable.cs" />
+    <Compile Remove="Migrations\20210316040117_ReCreateVendorTable.Designer.cs" />
+    <Compile Remove="Migrations\20210329081449_PODateFieldToPurchaseDate.cs" />
+    <Compile Remove="Migrations\20210329081449_PODateFieldToPurchaseDate.Designer.cs" />
+    <Compile Remove="Migrations\20210409115926_testing.cs" />
+    <Compile Remove="Migrations\20210409115926_testing.Designer.cs" />
+    <Compile Remove="Migrations\20210426045925_SavedToggleColumns.cs" />
+    <Compile Remove="Migrations\20210426045925_SavedToggleColumns.Designer.cs" />
+    <Compile Remove="Migrations\20210521120926_Assets_UniqueIndex.cs" />
+    <Compile Remove="Migrations\20210521120926_Assets_UniqueIndex.Designer.cs" />
+    <Compile Remove="Migrations\20210618133653_InterfaceWithSAP.cs" />
+    <Compile Remove="Migrations\20210618133653_InterfaceWithSAP.Designer.cs" />
+    <Compile Remove="Migrations\20210618134904_InterfaceWithSAPModule.cs" />
+    <Compile Remove="Migrations\20210618134904_InterfaceWithSAPModule.Designer.cs" />
+    <Compile Remove="Migrations\20210618135326_InterfaceWithSAPModule.cs" />
+    <Compile Remove="Migrations\20210618135326_InterfaceWithSAPModule.Designer.cs" />
+    <Compile Remove="Migrations\20210618145046_test.cs" />
+    <Compile Remove="Migrations\20210618145046_test.Designer.cs" />
+    <Compile Remove="Migrations\20210618150028_FixIssuesWithMigration2.cs" />
+    <Compile Remove="Migrations\20210618150028_FixIssuesWithMigration2.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.22" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.22">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+    <PackageReference Include="NReco.Logging.File" Version="1.1.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
+    <PackageReference Include="Autofac" Version="5.2.0" />
+    <PackageReference Include="CsvHelper" Version="26.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EmailTemplates\" />
+    <Folder Include="MailFiles\" />
+    <Folder Include="Models\Messaging\" />
+    <Content Include="EmailTemplates\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Logging\**" />
+    <Content Remove="Logging\**" />
+    <EmbeddedResource Remove="Logging\**" />
+    <None Remove="Logging\**" />
+  </ItemGroup>
+</Project>
