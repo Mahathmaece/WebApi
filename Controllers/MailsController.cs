@@ -118,17 +118,9 @@ namespace WebApi.Controllers
         {
             HttpContext.Response.RegisterForDispose(_disposable);
             var userId = UserService.GetUserIdFromToken(Request.Headers["Authorization"], _appSettings.Secret);
-            var userIdParam = new SqlParameter("@UserID", userId);
-            var labelIdParam = new SqlParameter("LabelID", paramLabelId);
-            var results = _context.MailModel.FromSqlRaw(@"
-                select m.Id, su.StaffName as SendingStaffName, su.StaffEmail as SendingStaffEmail, ru.StaffName as ReceivingStaffName, ru.StaffEmail as ReceivingStaffEmail, m.Subject, m.Message, m.SentTime, m.SentSuccessToSMTPServer, m.[Read], m.Starred, m.Important, m.HasAttachments, m.[Label], m.Folder 
-                from Mail m
-                left join Users su on su.UserID = m.SendingUserID
-                left join Users ru on ru.UserID = m.ReceivingUserID
-                where (m.SendingUserID = @UserID OR m.ReceivingUserID = @UserID)
-                and m.Label = @LabelID
-                order by m.SentTime desc", parameters: new[] { userIdParam, labelIdParam }).ToList();
-            return Ok(results);
+            //Need to Improve in App side params
+            MailsPageObj MailsPageObj = _mailService.GetMails(userId, 0, 1, 10,paramLabelId);
+            return Ok(MailsPageObj);
         }
 
         [HttpPost("m/{paramMailId}/resend")]
@@ -191,19 +183,7 @@ namespace WebApi.Controllers
 
                 HttpContext.Response.RegisterForDispose(_disposable);
                 int userId = UserService.GetUserIdFromToken(Request.Headers["Authorization"], _appSettings.Secret);
-                MailsPageObj mailsPageObj = _mailService.GetMailsByFolder(userId, paramFolderId, pageNumber, rowsOfPage);
-
-
-                //string sql = $"SELECT M.[Id] ,SU.[StaffName] AS SendingStaffName ,SU.[StaffEmail] AS SendingStaffEmail	,RU.[StaffName] AS ReceivingStaffName ,RU.[StaffEmail] AS ReceivingStaffEmail ,M.[Subject] ,M.[Message] ,M.[SentTime] ,M.[Read] ,M.[Starred] ,M.[Important] ,M.[HasAttachments] ,M.[Label] ,M.[Folder] ,M.[OriginMailID] ,M.[ErrorMessage] ,M.[SentSuccessToSMTPServer] FROM [test_db].[dbo].[Mail] AS M LEFT JOIN [Users] SU on M.SendingUserID = SU.UserID LEFT JOIN [Users] RU on M.ReceivingUserID = RU.UserID WHERE M.[Folder] = {paramFolderId} AND M.[SendingUserID]= {userId} ORDER BY [SentTime] DESC OFFSET {(pageNumber - 1) * rowsOfPage} ROWS FETCH NEXT {rowsOfPage} ROWS ONLY";
-                //string countSql = $"SELECT M.[Id] FROM [test_db].[dbo].[Mail] AS M LEFT JOIN [Users] SU on M.SendingUserID = SU.UserID LEFT JOIN [Users] RU on M.ReceivingUserID = RU.UserID WHERE M.[Folder] = {paramFolderId} AND M.[SendingUserID]= {userId}";
-                //var results = _context.MailModel.FromSqlRaw(sql).ToList();
-                //var count = _context.MailModel.FromSqlRaw(countSql).Count();
-
-                //MailsPageObj mailsPageObj = new MailsPageObj();
-                //mailsPageObj.results = results;
-                //mailsPageObj.pageNumber = pageNumber;
-                //mailsPageObj.totalRows = count;
-                //mailsPageObj.rowsOfPage = rowsOfPage;
+                MailsPageObj mailsPageObj = _mailService.GetMails(userId, paramFolderId, pageNumber, rowsOfPage);
                 return Ok(mailsPageObj);
             }
             catch (Exception ex)

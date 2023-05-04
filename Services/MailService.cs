@@ -27,7 +27,7 @@ namespace WebApi.Services
     public interface IMailService
     {
         Mail CreateResendMail(Mail originMail, List<MailAttachment> originMailAttachments);
-        MailsPageObj GetMailsByFolder(int userId, int paramFolderId, int pageNumber, int rowsOfPage);
+        MailsPageObj GetMails(int userId, int paramFolderId, int pageNumber, int rowsOfPage, int? paramLabelId = null);
     }
 
     public class MailService : IMailService, IDisposable
@@ -250,13 +250,37 @@ namespace WebApi.Services
                 throw new AppException(ex.Message);
             }
         }
-
-        //Get Email by folder
-        public MailsPageObj GetMailsByFolder(int userId, int paramFolderId, int pageNumber, int rowsOfPage)
-        {           
+        //Get Emails by Label
+        public MailsPageObj GetMailsByLabel(int userId, int paramLabelId, int paramFolderId, int pageNumber, int rowsOfPage)
+        {
 
             string sql = $"SELECT M.[Id] ,SU.[StaffName] AS SendingStaffName ,SU.[StaffEmail] AS SendingStaffEmail	,RU.[StaffName] AS ReceivingStaffName ,RU.[StaffEmail] AS ReceivingStaffEmail ,M.[Subject] ,M.[Message] ,M.[SentTime] ,M.[Read] ,M.[Starred] ,M.[Important] ,M.[HasAttachments] ,M.[Label] ,M.[Folder] ,M.[OriginMailID] ,M.[ErrorMessage] ,M.[SentSuccessToSMTPServer] FROM [test_db].[dbo].[Mail] AS M LEFT JOIN [Users] SU on M.SendingUserID = SU.UserID LEFT JOIN [Users] RU on M.ReceivingUserID = RU.UserID WHERE M.[Folder] = {paramFolderId} AND M.[SendingUserID]= {userId} ORDER BY [SentTime] DESC OFFSET {(pageNumber - 1) * rowsOfPage} ROWS FETCH NEXT {rowsOfPage} ROWS ONLY";
-            string countSql = $"SELECT M.[Id] FROM [test_db].[dbo].[Mail] AS M LEFT JOIN [Users] SU on M.SendingUserID = SU.UserID LEFT JOIN [Users] RU on M.ReceivingUserID = RU.UserID WHERE M.[Folder] = {paramFolderId} AND M.[SendingUserID]= {userId}";
+            string countSql = $"SELECT M.[Id] FROM [test_db].[dbo].[Mail] AS M LEFT JOIN [Users] SU on M.SendingUserID = SU.UserID LEFT JOIN [Users] RU on M.ReceivingUserID = RU.UserID WHERE M.[Folder] = {paramFolderId} AND M.[SendingUserID]= {userId} AND M.[Label] ={paramLabelId}";
+            var results = _context.MailModel.FromSqlRaw(sql).ToList();
+            var count = _context.MailModel.FromSqlRaw(countSql).Count();
+
+            MailsPageObj mailsPageObj = new MailsPageObj();
+            mailsPageObj.results = results;
+            mailsPageObj.pageNumber = pageNumber;
+            mailsPageObj.totalRows = count;
+            mailsPageObj.rowsOfPage = rowsOfPage;
+
+            return mailsPageObj;
+        }
+        //Get Emails by folder
+        public MailsPageObj GetMails(int userId, int paramFolderId, int pageNumber, int rowsOfPage, int? paramLabelId)
+        {
+
+            string whereExpr = $" WHERE M.[Folder] = {paramFolderId} AND M.[SendingUserID]= {userId}";
+            if (paramLabelId.HasValue) {
+
+                whereExpr = $"{whereExpr} AND M.[Label]={paramLabelId}";
+            }
+
+               string sql = $"SELECT M.[Id] ,SU.[StaffName] AS SendingStaffName ,SU.[StaffEmail] AS SendingStaffEmail	,RU.[StaffName] AS ReceivingStaffName ,RU.[StaffEmail] AS ReceivingStaffEmail ,M.[Subject] ,M.[Message] ,M.[SentTime] ,M.[Read] ,M.[Starred] ,M.[Important] ,M.[HasAttachments] ,M.[Label] ,M.[Folder] ,M.[OriginMailID] ,M.[ErrorMessage] ,M.[SentSuccessToSMTPServer] FROM [test_db].[dbo].[Mail] AS M LEFT JOIN [Users] SU on M.SendingUserID = SU.UserID LEFT JOIN [Users] RU on M.ReceivingUserID = RU.UserID {whereExpr} ORDER BY [SentTime] DESC OFFSET {(pageNumber - 1) * rowsOfPage} ROWS FETCH NEXT {rowsOfPage} ROWS ONLY";
+
+                string countSql = $"SELECT M.[Id] FROM [test_db].[dbo].[Mail] AS M LEFT JOIN [Users] SU on M.SendingUserID = SU.UserID LEFT JOIN [Users] RU on M.ReceivingUserID = RU.UserID {whereExpr}";
+            
             var results = _context.MailModel.FromSqlRaw(sql).ToList();
             var count = _context.MailModel.FromSqlRaw(countSql).Count();
 
